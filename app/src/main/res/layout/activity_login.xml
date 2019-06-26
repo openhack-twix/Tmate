@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+
+    tools:context=".LoginActivity">
+
+
+    <ImageView
+        android:id="@+id/login_iv_logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@color/black"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/login_btn_fb"
+        android:layout_marginBottom="300dp"/>
+
+
+    <Button
+        android:id="@+id/login_btn_fb"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="facebook login"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/login_btn_kakao" />
+
+    <Button
+        android:id="@+id/login_btn_kakao"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="kakao login"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
