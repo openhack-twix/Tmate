@@ -19,24 +19,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-        <!--
         <ImageView
             android:id="@+id/main_iv_toolbarLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="101dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
-            android:src="@drawable/logo1" />
-        -->
-
-        <TextView
-            android:id="@+id/main_tv_toolbarTitle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/toolbar_title"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="25sp" />
+            android:src="@drawable/toolbar_logo_3x" />
 
 
     </android.support.v7.widget.Toolbar>
@@ -48,6 +36,8 @@
         android:layout_weight="12"
         android:background="@color/light_gray"
         app:layout_constraintBottom_toTopOf="@+id/main_linearLayout_bottomBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_toolbar">
 
         <fragment
@@ -61,15 +51,51 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btn_chat_room"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
+            android:id="@+id/floating_refresh"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="24dp"
             android:clickable="true"
+            android:elevation="10dp"
+            android:padding="0dp"
+            android:scaleType="center"
+            android:src="@drawable/floating_refresh_3x"
+            app:background="@color/transparent"
+            app:borderWidth="0dp"
+            app:layout_constraintBottom_toTopOf="@id/floating_myLocation"
+            app:layout_constraintRight_toRightOf="@id/map"
+            app:maxImageSize="56dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floating_myLocation"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:elevation="10dp"
+            android:padding="0dp"
+            android:scaleType="center"
+            app:background="@color/transparent"
+            app:layout_constraintBottom_toTopOf="@id/floating_messages"
+            app:layout_constraintRight_toRightOf="@id/map"
+            app:maxImageSize="56dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floating_messages"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:elevation="10dp"
+            android:padding="0dp"
+            android:scaleType="center"
             app:layout_constraintBottom_toBottomOf="@+id/map"
             app:layout_constraintEnd_toEndOf="@+id/map"
-            app:srcCompat="@drawable/circle" />
+            app:maxImageSize="56dp"
+            app:srcCompat="@drawable/floating_messages_3x" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -77,99 +103,112 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/main_linearLayout_bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="52dp"
         android:background="@color/colorPrimary"
-        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:id="@+id/main_layout_timepicker"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/message_box"
+            android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/message_box"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/main_layout_timepicker"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal"
+            <TextView
+                android:id="@+id/main_tv_timeHour"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|right"
+                android:text="12"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/textView2"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/main_tv_timeHour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:gravity="center_vertical|right"
-                    android:text="12"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/textView2"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:text=":"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/main_tv_timeMinute"
-                    app:layout_constraintStart_toEndOf="@+id/main_tv_timeHour"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/main_tv_timeMinute"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:gravity="center_vertical|left"
-                    android:text="34"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView2"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <ImageButton
-                android:id="@+id/main_btn_send"
+            <TextView
+                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:text=":"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/main_tv_timeMinute"
+                app:layout_constraintStart_toEndOf="@+id/main_tv_timeHour"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/main_tv_timeMinute"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center_vertical|left"
+                android:text="34"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/editText2"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars[0]" />
+                app:layout_constraintStart_toEndOf="@+id/textView2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/message_box"
+            android:layout_width="0dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/message_box_1x"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/main_layout_timepicker"
+            app:layout_constraintTop_toTopOf="parent">
+
 
             <EditText
                 android:id="@+id/editText2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@color/transparent"
                 android:ems="10"
+                android:hint="메세지를 입력하세요."
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="메세지를 입력하세요."
+                android:textSize="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/main_btn_send"
-                app:layout_constraintStart_toEndOf="@+id/main_layout_timepicker"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageButton
+                android:id="@+id/main_btn_send"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/icon_send"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/editText2"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars[0]" />
         </android.support.constraint.ConstraintLayout>
 
 

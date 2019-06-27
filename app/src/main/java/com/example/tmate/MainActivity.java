@@ -1,38 +1,25 @@
 package com.example.tmate;
 
-//import android.support.design.widget.FloatingActionButton;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-
-import android.app.TimePickerDialog;
-import android.content.Context;
-
-import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -41,9 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.kakao.usermgmt.UserManagement;
@@ -102,7 +87,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         tvMinutes = findViewById(R.id.main_tv_timeMinute);
 
         ImageButton btn_chat_room = findViewById(R.id.btn_chat_room);
-
+        FloatingActionButton floating_mylocation = findViewById(R.id.floating_myLocation);
+        floating_mylocation.setImageResource(R.drawable.floating_mylocation_3x);
 
         btn_send.setOnClickListener(mainButtonClickListener);
         timeLayout.setOnClickListener(mainButtonClickListener);
@@ -129,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mSocket.emit("create room",data);
     }
 
-    private void setMap(){
+    private void setMap() {
         //Google Map API configuration
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
@@ -199,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                if(is_moved[0]){
+                if (is_moved[0]) {
                     map.clear();
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(map.getCameraPosition().target);
@@ -243,15 +229,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void requestPermissionAndContinue(){
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+    private void requestPermissionAndContinue() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 120);
-            }else{
-                Toast.makeText(this,"권한허용이 필요합니다.",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "권한허용이 필요합니다.", Toast.LENGTH_LONG).show();
                 finish();
             }
-        }else{
+        } else {
             setMap();
         }
     }
@@ -299,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -307,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final boolean isGranted = numOfRequest == 1
                         && PackageManager.PERMISSION_GRANTED == grantResults[numOfRequest - 1];
                 if (!isGranted) {
-                    Toast.makeText(this,"권한허용이 필요합니다.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "권한허용이 필요합니다.", Toast.LENGTH_LONG).show();
                     finish();
                 }
                 Intent refresh = new Intent(this, MainActivity.class);
