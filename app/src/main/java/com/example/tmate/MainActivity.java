@@ -1,6 +1,6 @@
 package com.example.tmate;
 
-//import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.FloatingActionButton;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -80,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ConstraintLayout timeLayout = findViewById(R.id.main_layout_timepicker);
         tvHour = findViewById(R.id.main_tv_timeHour);
         tvMinutes = findViewById(R.id.main_tv_timeMinute);
+
+        FloatingActionButton floating_mylocation = findViewById(R.id.floating_myLocation);
+        floating_mylocation.setImageResource(R.drawable.floating_mylocation_3x);
 
 
         btn_send.setOnClickListener(mainButtonClickListener);
