@@ -45,7 +45,6 @@
         android:layout_height="0dp"
         android:layout_weight="12"
         android:background="@color/light_gray"
-        app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
         app:layout_constraintBottom_toBottomOf="@+id/main_linearLayout_bottomBar">
 
         <fragment
@@ -60,7 +59,6 @@
         android:id="@+id/main_linearLayout_bottomBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
@@ -100,7 +98,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:ellipsize="end" />
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:paddingBottom="10dp" />
 
         <Button
             android:id="@+id/main_btn_send"
