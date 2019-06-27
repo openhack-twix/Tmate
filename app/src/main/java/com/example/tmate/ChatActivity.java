@@ -29,6 +29,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText et_chat_room;
     private ImageButton btn_chat_send;
     private Button btn_chat_exit;
+    private Button btn_chat_back;
 
     private String roomtitle;
     private String logs;
@@ -60,6 +61,7 @@ public class ChatActivity extends AppCompatActivity {
         logView.setAdapter(messageAdapter);
         logView.setDivider(null);
         et_chat_room = findViewById(R.id.et_chat_text);
+        btn_chat_back = findViewById(R.id.btn_chat_back);
         btn_chat_exit = findViewById(R.id.btn_chat_exit);
         btn_chat_send = findViewById(R.id.btn_chat_send);
         btn_chat_send.setImageResource(R.drawable.icon_send);
@@ -95,6 +97,13 @@ public class ChatActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 mSocket.emit("leave",data);
+                finish();
+            }
+        });
+
+        btn_chat_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 finish();
             }
         });

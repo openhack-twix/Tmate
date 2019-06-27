@@ -108,15 +108,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         btn_send.setOnClickListener(mainButtonClickListener);
 
-        try {
-            mSocket = IO.socket(LoginActivity.SERVER_URL);
-            mSocket.connect();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        mSocket.on("create success",onSuccess);
-        mSocket.on("join success",onJoin);
     }
 
     private void setMap() {
@@ -242,19 +233,53 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+        try {
+            mSocket = IO.socket(LoginActivity.SERVER_URL);
+            mSocket.connect();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        mSocket.on("create success",onSuccess);
+        mSocket.on("join success",onJoin);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSocket.off("create success");
         mSocket.off("join success");
+        mSocket.off("create success");
+        mSocket.disconnect();
         UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
             @Override
             public void onCompleteLogout() {
                 //Nothing to do.
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            super.onActivityResult(requestCode, resultCode, data);
+
+            Intent refresh = new Intent(this,MainActivity.class);
+            refresh.putExtra("nickname",NICKNAME);
+            refresh.putExtra("colorcode",COLORCODE);
+            refresh.putExtra("userid",USERID);
+            startActivity(refresh);
+            this.finish();
+
+        } catch (Exception ex) {
+            Toast.makeText(this, ex.toString(),
+                    Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void requestPermissionAndContinue() {
@@ -291,6 +316,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     myMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(myLat,myLng)));
                     break;
                 case R.id.floating_messages:
+                    Intent intent = new Intent(MainActivity.this,ChatRoomActivity.class);
+                    startActivityForResult(intent,1);
                     break;
                 case R.id.main_btn_send:
                     //Gather information and emit to server socket
@@ -377,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 intent.putExtra("roomid",roomid);
 
                 mesesage.setText("");
-                startActivity(intent);
+                startActivityForResult(intent,2);
             }catch (Exception e){
                 e.printStackTrace();
             }
