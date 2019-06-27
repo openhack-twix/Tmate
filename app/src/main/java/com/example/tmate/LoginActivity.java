@@ -44,8 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         if(isLoggedIn)
             redirectToMain();
 
-        LoginButtonClickListener loginButtonClickListener = new LoginButtonClickListener();
-
         //findViewById
         ImageView main_logo = findViewById(R.id.login_iv_logo);
         btn_fb_login = findViewById(R.id.fb_login_button);
