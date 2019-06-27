@@ -14,6 +14,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -88,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MainButtonClickListener mainButtonClickListener = new MainButtonClickListener();
 
 
-        Button btn_send = findViewById(R.id.main_btn_send);
-        LinearLayout timeLayout = findViewById(R.id.main_layout_timepicker);
+        ImageButton btn_send = findViewById(R.id.main_btn_send);
+        ConstraintLayout timeLayout = findViewById(R.id.main_layout_timepicker);
         tvHour = findViewById(R.id.main_tv_timeHour);
         tvMinutes = findViewById(R.id.main_tv_timeMinute);
 
