@@ -86,33 +86,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         tvHour = findViewById(R.id.main_tv_timeHour);
         tvMinutes = findViewById(R.id.main_tv_timeMinute);
 
-        ImageButton btn_chat_room = findViewById(R.id.btn_chat_room);
+        FloatingActionButton floating_chat_room = findViewById(R.id.floating_chatroom);
         FloatingActionButton floating_mylocation = findViewById(R.id.floating_myLocation);
         floating_mylocation.setImageResource(R.drawable.floating_mylocation_3x);
 
         btn_send.setOnClickListener(mainButtonClickListener);
         timeLayout.setOnClickListener(mainButtonClickListener);
-        btn_chat_room.setOnClickListener(mainButtonClickListener);
+        floating_chat_room.setOnClickListener(mainButtonClickListener);
 
         try {
             mSocket = IO.socket(LoginActivity.SERVER_URL);
             mSocket.connect();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         JSONObject data = new JSONObject();
-        try{
-            data.put("city","익산");
-            data.put("title","익산");
-            data.put("content","익산");
-            data.put("lat",0.1);
-            data.put("lon",0.3);
-            data.put("userid","test");
-        }catch (JSONException e){
+        try {
+            data.put("city", "익산");
+            data.put("title", "익산");
+            data.put("content", "익산");
+            data.put("lat", 0.1);
+            data.put("lon", 0.3);
+            data.put("userid", "test");
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        mSocket.emit("create room",data);
+        mSocket.emit("create room", data);
     }
 
     private void setMap() {
@@ -279,7 +279,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                     timePickerDialog.show();
                     break;
-                case R.id.btn_chat_room:
+                case R.id.floating_chatroom:
+                    Intent intent_chatroom = new Intent(mContext, ChatActivity.class);
+                    startActivity(intent_chatroom);
                     break;
             }
 
