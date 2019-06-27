@@ -13,7 +13,7 @@
         android:id="@+id/login_iv_logo"
         android:layout_width="112dp"
         android:layout_height="151dp"
-        android:layout_marginTop="199dp"
+        android:layout_marginTop="250dp"
         android:src="@drawable/logo4"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
