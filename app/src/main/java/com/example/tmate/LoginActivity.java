@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
@@ -52,12 +52,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
 
         //Check whether token is valid or not
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if(isLoggedIn){
+        if (isLoggedIn) {
             serverLogin(accessToken.toString());
         }
 
@@ -162,12 +164,12 @@ public class LoginActivity extends AppCompatActivity {
         return response[0];
     }
 
-    public static String sendPost(final byte[] postDataBytes, final String key_url){
+    public static String sendPost(final byte[] postDataBytes, final String key_url) {
         final String[] response = new String[1];
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     URL url = new URL(key_url);
                     StringBuffer res = new StringBuffer();
 
@@ -191,12 +193,12 @@ public class LoginActivity extends AppCompatActivity {
                     Log.i("MSG", conn.getResponseMessage());
 
                     int status = conn.getResponseCode();
-                    if(status!=200){
+                    if (status != 200) {
                         throw new IOException("Post failed");
-                    }else{
+                    } else {
                         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                         String inputLine;
-                        while ((inputLine = in.readLine())!=null){
+                        while ((inputLine = in.readLine()) != null) {
                             res.append(inputLine);
                         }
                         in.close();
@@ -205,17 +207,18 @@ public class LoginActivity extends AppCompatActivity {
                     conn.disconnect();
 
                     response[0] = res.toString();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
         thread.start();
-        while(thread.isAlive()){}
+        while (thread.isAlive()) {
+        }
         return response[0];
     }
 
-    public static byte[] parseParameter(Map<String,Object> params){
+    public static byte[] parseParameter(Map<String, Object> params) {
         StringBuilder postData = new StringBuilder();
         byte[] postDataBytes = null;
         try {
@@ -227,12 +230,11 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             postDataBytes = postData.toString().getBytes("UTF-8");
-        }catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return  postDataBytes;
+        return postDataBytes;
     }
-
 
 
     public class LoginButtonClickListener implements View.OnClickListener {
@@ -307,12 +309,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void serverLogin(String value){
-        Map<String,Object> data = new LinkedHashMap<>();
-        data.put("username",value);
+    private void serverLogin(String value) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("username", value);
 
         byte[] loginDataBytes = parseParameter(data);
-        String resultLogin = sendPost(loginDataBytes,LOGIN_URL);
+        String resultLogin = sendPost(loginDataBytes, LOGIN_URL);
         Log.e("LOGIN", resultLogin);
         try {
             JSONObject result = new JSONObject(resultLogin);

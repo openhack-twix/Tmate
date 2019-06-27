@@ -16,6 +16,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".GuideActivity"></activity>
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,8 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -37,11 +37,11 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".ChatRoomActivity"></activity>
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".ChatRoomActivity" />
+        <activity android:name=".LoginActivity" />
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.kakao.auth.authorization.authcode.KakaoWebViewActivity"
             android:launchMode="singleTop"

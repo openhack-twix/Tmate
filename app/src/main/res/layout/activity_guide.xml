@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".GuideActivity">
+
+    <Button
+        android:id="@+id/guide_btn_skip"
+        android:layout_width="38dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="27dp"
+        android:background="@color/transparent"
+        android:text="Skip"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:layout_marginTop="103dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/guide_vp_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v4.view.ViewPager>
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/guide_btn_start"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="69dp"
+        android:background="@drawable/round_button"
+        android:fontFamily="@font/notosanscjkkr_bold"
+        android:text="@string/guide_gogo"
+        android:textColor="@color/white"
+        android:textSize="14dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/guide_indicator"
+        android:layout_width="82dp"
+        android:layout_height="14dp"
+        android:layout_marginBottom="87dp"
+        android:src="@drawable/indicator_first_3x"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
