@@ -18,27 +18,28 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
+        <!--
         <ImageView
             android:id="@+id/main_iv_toolbarLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:src="@drawable/logo1" />
+        -->
+
+        <TextView
+            android:id="@+id/main_tv_toolbarTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/toolbar_title"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="25sp" />
 
 
     </android.support.v7.widget.Toolbar>
 
-
-    <!--
-    <fragment
-        android:id="@+id/main_frameLayout_googleMap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        class="com.google.android.gms.maps.MapFragment"
-
-    />
-    -->
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -49,17 +50,6 @@
 
     </FrameLayout>
 
-
-    <!--
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/main_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_launcher_foreground" />
-    -->
 
     <LinearLayout
         android:id="@+id/main_linearLayout_bottomBar"

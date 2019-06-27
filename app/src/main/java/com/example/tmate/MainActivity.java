@@ -56,9 +56,17 @@ public class MainActivity extends AppCompatActivity {
 
         targetHour = targetCalendar.get(Calendar.HOUR_OF_DAY);
         targetMinutes = targetCalendar.get(Calendar.MINUTE);
-        tvHour.setText(String.valueOf(targetHour));
-        tvMinutes.setText(String.valueOf(targetMinutes));
+        setTimeTextView(targetHour, targetMinutes);
 
+    }
+
+    public void setTimeTextView(int targetHour, int targetMinutes) {
+        tvHour.setText(String.valueOf(targetHour));
+        if (targetMinutes < 10) {
+            tvMinutes.setText("0" + targetMinutes);
+            return;
+        }
+        tvMinutes.setText(String.valueOf(targetMinutes));
     }
 
     public class MainButtonClickListener implements View.OnClickListener {
@@ -78,8 +86,7 @@ public class MainActivity extends AppCompatActivity {
                             if (view.isShown()) {
                                 targetHour = hourOfDay;
                                 targetMinutes = minute;
-                                tvHour.setText(String.valueOf(targetHour));
-                                tvMinutes.setText(String.valueOf(targetMinutes));
+                                setTimeTextView(targetHour, targetMinutes);
                             }
                         }
                     };
