@@ -18,6 +18,10 @@
         tools:ignore="GoogleAppIndexingWarning"
         android:usesCleartextTraffic="true">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_api_key" />
+
         <meta-data android:name="com.kakao.sdk.AppKey" android:value="8fde979fc2f1a4c7b311a25f3a86c973"/>
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <activity android:name=".LoginActivity">
