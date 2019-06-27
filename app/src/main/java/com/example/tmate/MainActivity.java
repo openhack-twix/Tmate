@@ -6,6 +6,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,7 +24,9 @@ import android.view.ViewGroup;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -31,7 +35,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.facebook.CallbackManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -71,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double LNG_INTERLAKEN = 7.858514;
 
     private final boolean[] is_moved = {false};
-
 
 
     @Override
@@ -136,10 +138,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (addresses.size() > 0) {
             Address city_addr = addresses.get(0);
             myCity = city_addr.getLocality();
-            Toast.makeText(this,myCity, Toast.LENGTH_LONG).show();
-        }
-        else {
-            Toast.makeText(this,"대체 어디 계신지...", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, myCity, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "대체 어디 계신지...", Toast.LENGTH_LONG).show();
         }
 
         MarkerOptions markerOptions = new MarkerOptions();
@@ -202,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
             @Override
@@ -244,8 +245,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 case R.id.main_btn_send:
                     Toast.makeText(MainActivity.this, "send", Toast.LENGTH_SHORT).show();
                     break;
-                case R.id.main_layout_timepicker:
 
+                case R.id.main_layout_timepicker:
                     TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
