@@ -57,9 +57,26 @@ public class ChatRoomAdapter extends BaseAdapter {
 
         holder.room_name.setText(room.getRoomName());
         holder.last_message.setText(room.getLastMessage());
-        GradientDrawable drawable = (GradientDrawable) holder.room_icon.getBackground();
-        drawable.setColor(Color.parseColor(room.getColorString()));
 
+        int rand_integer = (int) (Math.random()*5);
+
+        switch (rand_integer){
+            case 0:
+                holder.room_icon.setImageResource(R.drawable.room_icon_1);
+                break;
+            case 1:
+                holder.room_icon.setImageResource(R.drawable.room_icon_2);
+                break;
+            case 2:
+                holder.room_icon.setImageResource(R.drawable.room_icon_3);
+                break;
+            case 3:
+                holder.room_icon.setImageResource(R.drawable.room_icon_4);
+                break;
+            case 4:
+                holder.room_icon.setImageResource(R.drawable.room_icon_5);
+                break;
+        }
         return convertView;
     }
 

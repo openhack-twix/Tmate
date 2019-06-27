@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/imageView_chatroom"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
@@ -24,9 +24,10 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:text="Placeholder"
-        android:textStyle="bold"
-        android:textSize="30dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_last_message"
+        app:layout_constraintStart_toEndOf="@+id/imageView_chatroom"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -34,11 +35,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
         android:text="TextView"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/imageView_chatroom"
         app:layout_constraintTop_toBottomOf="@+id/tv_roomname" />
 
 </android.support.constraint.ConstraintLayout>
