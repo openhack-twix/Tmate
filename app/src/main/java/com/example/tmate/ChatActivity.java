@@ -3,11 +3,12 @@ package com.example.tmate;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import java.net.Socket;
+import io.socket.client.Socket;
+
 
 public class ChatActivity extends AppCompatActivity {
 
-    private Socket mSocket = LoginActivity.mSocket;
+    private Socket mSocket = MainActivity.mSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
