@@ -48,6 +48,8 @@
         android:layout_weight="12"
         android:background="@color/light_gray"
         app:layout_constraintBottom_toTopOf="@+id/main_linearLayout_bottomBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_toolbar">
 
         <fragment
@@ -77,31 +79,28 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/main_linearLayout_bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="52dp"
         android:background="@color/colorPrimary"
-        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/message_box"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/message_box_1x"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/main_layout_timepicker"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -112,10 +111,10 @@
                     android:id="@+id/main_tv_timeHour"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
                     android:gravity="center_vertical|right"
                     android:text="12"
-                    android:textSize="20sp"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/textView2"
                     app:layout_constraintStart_toStartOf="parent"
@@ -127,7 +126,8 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical|center_horizontal"
                     android:text=":"
-                    android:textSize="20sp"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/main_tv_timeMinute"
                     app:layout_constraintStart_toEndOf="@+id/main_tv_timeHour"
@@ -139,7 +139,8 @@
                     android:layout_height="0dp"
                     android:gravity="center_vertical|left"
                     android:text="34"
-                    android:textSize="20sp"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textView2"
@@ -147,29 +148,33 @@
 
             </android.support.constraint.ConstraintLayout>
 
-            <ImageButton
-                android:id="@+id/main_btn_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/editText2"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars[0]" />
 
             <EditText
                 android:id="@+id/editText2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@color/transparent"
                 android:ems="10"
+                android:hint="메세지를 입력하세요."
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="메세지를 입력하세요."
+                android:textSize="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/main_btn_send"
                 app:layout_constraintStart_toEndOf="@+id/main_layout_timepicker"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageButton
+                android:id="@+id/main_btn_send"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_send"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/editText2"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars[0]" />
         </android.support.constraint.ConstraintLayout>
 
 
