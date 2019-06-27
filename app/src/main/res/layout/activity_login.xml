@@ -11,8 +11,8 @@
 
     <ImageView
         android:id="@+id/login_iv_logo"
-        android:layout_width="103dp"
-        android:layout_height="139dp"
+        android:layout_width="108dp"
+        android:layout_height="146dp"
         android:layout_marginTop="250dp"
         android:src="@drawable/logo_3x"
         app:layout_constraintLeft_toLeftOf="parent"
