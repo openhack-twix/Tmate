@@ -49,10 +49,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -76,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double LNG_INTERLAKEN = 7.858514;
 
     private final boolean[] is_moved = {false};
-
+    public static Socket mSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,10 +101,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         tvHour = findViewById(R.id.main_tv_timeHour);
         tvMinutes = findViewById(R.id.main_tv_timeMinute);
 
+        ImageButton btn_chat_room = findViewById(R.id.btn_chat_room);
+
 
         btn_send.setOnClickListener(mainButtonClickListener);
         timeLayout.setOnClickListener(mainButtonClickListener);
+        btn_chat_room.setOnClickListener(mainButtonClickListener);
 
+        try {
+            mSocket = IO.socket(LoginActivity.SERVER_URL);
+            mSocket.connect();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        JSONObject data = new JSONObject();
+        try{
+            data.put("city","익산");
+            data.put("title","익산");
+            data.put("content","익산");
+            data.put("lat",0.1);
+            data.put("lon",0.3);
+            data.put("userid","test");
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        mSocket.emit("create room",data);
     }
 
     private void setMap(){
@@ -264,6 +292,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     timePickerDialog.setTitle("몇 시까지?");
                     timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                     timePickerDialog.show();
+                    break;
+                case R.id.btn_chat_room:
                     break;
             }
 

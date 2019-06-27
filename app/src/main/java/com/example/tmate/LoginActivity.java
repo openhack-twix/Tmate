@@ -23,21 +23,31 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.exception.KakaoException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class LoginActivity extends AppCompatActivity {
-
-    private static final String TAG = LoginActivity.class.getSimpleName();
 
     private ImageButton custom_btn_fb, custom_btn_kakao;
     private LoginButton btn_kakao_login;
     private com.facebook.login.widget.LoginButton btn_fb_login;
     private CallbackManager callbackManager;
 
-    public static String SERVER_URL = "not yet";
-
-    public static Socket mSocket;
+    public static String LOGIN_URL = "http://10.10.2.126:3000/auth/login";
+    public static String SERVER_URL = "http://10.10.2.126:3000";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +57,10 @@ public class LoginActivity extends AppCompatActivity {
         //Check whether token is valid or not
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if(isLoggedIn)
-            redirectToMain();
+        if(isLoggedIn){
+            serverLogin(accessToken.toString());
+        }
+
 
         //findViewById
         ImageView main_logo = findViewById(R.id.login_iv_logo);
@@ -72,7 +84,8 @@ public class LoginActivity extends AppCompatActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        redirectToMain();
+                        AccessToken token = AccessToken.getCurrentAccessToken();
+                        serverLogin(token.toString());
                     }
 
                     @Override
@@ -100,11 +113,88 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void redirectToMain() {
+    public void redirectToMain(String colorcode, String userid) {
+        Log.e("REDIRECT",colorcode);
+        Log.e("USERID",userid);
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("colorcode",colorcode);
+        intent.putExtra("userid",userid);
         startActivity(intent);
         finish();
     }
+
+    public static String sendPost(final byte[] postDataBytes, final String key_url){
+        final String[] response = new String[1];
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    URL url = new URL(key_url);
+                    StringBuffer res = new StringBuffer();
+
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                    conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+
+                    //set parameters
+                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+
+                    os.write(postDataBytes);
+
+                    os.flush();
+                    os.close();
+
+                    Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+                    Log.i("MSG", conn.getResponseMessage());
+
+                    int status = conn.getResponseCode();
+                    if(status!=200){
+                        throw new IOException("Post failed");
+                    }else{
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        while ((inputLine = in.readLine())!=null){
+                            res.append(inputLine);
+                        }
+                        in.close();
+                    }
+
+                    conn.disconnect();
+
+                    response[0] = res.toString();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+        while(thread.isAlive()){}
+        return response[0];
+    }
+
+    public static byte[] parseParameter(Map<String,Object> params){
+        StringBuilder postData = new StringBuilder();
+        byte[] postDataBytes = null;
+        try {
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                if (postData.length() != 0) postData.append('&');
+                postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                postData.append("=");
+                postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+            }
+
+            postDataBytes = postData.toString().getBytes("UTF-8");
+        }catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return  postDataBytes;
+    }
+
+
 
     public class LoginButtonClickListener implements View.OnClickListener {
 
@@ -163,18 +253,8 @@ public class LoginActivity extends AppCompatActivity {
                 public void onSuccess(UserProfile userProfile) {
                     Log.e("SessionCallback :: ", "onSuccess");
                     String nickname = userProfile.getNickname();
-                    String email = userProfile.getEmail();
-                    String profileImagePath = userProfile.getProfileImagePath();
-                    String thumnailPath = userProfile.getThumbnailImagePath();
-                    String UUID = userProfile.getUUID();
-                    long id = userProfile.getId();
-                    Log.e("Profile : ", nickname + "");
-                    Log.e("Profile : ", email + "");
-                    Log.e("Profile : ", profileImagePath + "");
-                    Log.e("Profile : ", thumnailPath + "");
-                    Log.e("Profile : ", UUID + "");
-                    Log.e("Profile : ", id + "");
-                    redirectToMain();
+
+                    serverLogin(nickname);
                 }
 
 
@@ -186,5 +266,24 @@ public class LoginActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+    private void serverLogin(String value){
+        Map<String,Object> data = new LinkedHashMap<>();
+        data.put("username",value);
+
+        byte[] loginDataBytes = parseParameter(data);
+        String resultLogin = sendPost(loginDataBytes,LOGIN_URL);
+        Log.e("LOGIN", resultLogin);
+        try {
+            JSONObject result = new JSONObject(resultLogin);
+            if(result.getString("success").equals("0")){
+                Log.e("SUCCESS","0");
+                redirectToMain(result.getString("colorcode"),result.getString("nickname"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return;
     }
 }
