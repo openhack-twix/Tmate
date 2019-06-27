@@ -116,23 +116,23 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void redirectToMain(String colorcode, String nickname, String userid) {
-        Log.e("REDIRECT",colorcode);
-        Log.e("USERID",userid);
-        Log.e("NICKNAME",nickname);
+        Log.e("REDIRECT", colorcode);
+        Log.e("USERID", userid);
+        Log.e("NICKNAME", nickname);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("colorcode",colorcode);
-        intent.putExtra("userid",userid);
-        intent.putExtra("nickname",nickname);
+        intent.putExtra("colorcode", colorcode);
+        intent.putExtra("userid", userid);
+        intent.putExtra("nickname", nickname);
         startActivity(intent);
         finish();
     }
 
-    public static String sendGet(final String key_url){
+    public static String sendGet(final String key_url) {
         final String[] response = new String[1];
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     URL url = new URL(key_url);
                     StringBuffer res = new StringBuffer();
 
@@ -140,12 +140,12 @@ public class LoginActivity extends AppCompatActivity {
                     conn.setRequestMethod("GET");
 
                     int status = conn.getResponseCode();
-                    if(status!=200){
+                    if (status != 200) {
                         throw new IOException("GET failed");
-                    }else{
+                    } else {
                         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                         String inputLine;
-                        while ((inputLine = in.readLine())!=null){
+                        while ((inputLine = in.readLine()) != null) {
                             res.append(inputLine);
                         }
                         in.close();
@@ -154,13 +154,14 @@ public class LoginActivity extends AppCompatActivity {
                     conn.disconnect();
 
                     response[0] = res.toString();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
         thread.start();
-        while(thread.isAlive()){}
+        while (thread.isAlive()) {
+        }
         return response[0];
     }
 
@@ -246,6 +247,7 @@ public class LoginActivity extends AppCompatActivity {
                 case R.id.login_iv_logo:
                     Intent intent = new Intent(v.getContext(), MainActivity.class);
                     startActivity(intent);
+                    finish();
                     break;
 
                 case R.id.custom_btn_fb:
@@ -283,7 +285,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 // 회원이 아닌 경우,
-
                 @Override
                 public void onNotSignedUp() {
                     Log.e("SessionCallback :: ", "onNotSignedUp");
@@ -318,9 +319,9 @@ public class LoginActivity extends AppCompatActivity {
         Log.e("LOGIN", resultLogin);
         try {
             JSONObject result = new JSONObject(resultLogin);
-            if(result.getString("success").equals("0")){
-                Log.e("SUCCESS","0");
-                redirectToMain(result.getString("colorcode"),result.getString("nickname"),result.getString("user"));
+            if (result.getString("success").equals("0")) {
+                Log.e("SUCCESS", "0");
+                redirectToMain(result.getString("colorcode"), result.getString("nickname"), result.getString("user"));
             }
         } catch (JSONException e) {
             e.printStackTrace();

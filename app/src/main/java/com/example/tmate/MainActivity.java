@@ -2,9 +2,11 @@ package com.example.tmate;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -13,7 +15,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,7 +23,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,7 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -111,12 +110,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             mSocket = IO.socket(LoginActivity.SERVER_URL);
             mSocket.connect();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        mSocket.on("create success",onSuccess);
-        mSocket.on("join success",onJoin);
+        mSocket.on("create success", onSuccess);
+        mSocket.on("join success", onJoin);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("알림");
+        builder.setMessage("Tmate를 종료하시겠습니까?");
+        builder.setNegativeButton("취소", null);
+        builder.setPositiveButton("종료", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ActivityCompat.finishAffinity(((Activity) mContext));
+                System.runFinalizersOnExit(true);
+                System.exit(0);
+            }
+        });
+        builder.show();
     }
 
     private void setMap() {
@@ -161,9 +177,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //GET room array
         String room_url = ROOMS_API + myCity;
         final String result = LoginActivity.sendGet(room_url);
-        Log.e("ROOMS",result);
+        Log.e("ROOMS", result);
 
-        makeMarkers(map,result);
+        makeMarkers(map, result);
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(current);
@@ -179,13 +195,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 JSONObject joinData = new JSONObject();
 
                 try {
-                    joinData.put("roomid",roomID);
-                    joinData.put("userid",MainActivity.USERID);
+                    joinData.put("roomid", roomID);
+                    joinData.put("userid", MainActivity.USERID);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 roomid = roomID;
-                mSocket.emit("join",joinData);
+                mSocket.emit("join", joinData);
             }
         });
 
@@ -193,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onMapClick(final LatLng clickCoords) {
                 map.clear();
-                makeMarkers(map,result);
+                makeMarkers(map, result);
                 myLat = clickCoords.latitude;
                 myLng = clickCoords.longitude;
 
@@ -207,29 +223,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void makeMarkers(GoogleMap map, String rooms){
+    private void makeMarkers(GoogleMap map, String rooms) {
         try {
             JSONArray room_array = new JSONArray(rooms);
-            for(int i = 0; i<room_array.length(); i++){
+            for (int i = 0; i < room_array.length(); i++) {
                 JSONObject temp = room_array.getJSONObject(i);
 
                 JSONArray users = temp.getJSONArray("users");
                 //check whether user is already in the room
                 boolean occupied = false;
-                for(int j = 0; j<users.length(); j++){
-                    if(users.getJSONObject(j).getString("_id").equals(USERID)){
+                for (int j = 0; j < users.length(); j++) {
+                    if (users.getJSONObject(j).getString("_id").equals(USERID)) {
                         occupied = true;
                         break;
                     }
                 }
                 MarkerOptions newMarker = new MarkerOptions();
-                LatLng pos = new LatLng(temp.getDouble("lat"),temp.getDouble("lon"));
+                LatLng pos = new LatLng(temp.getDouble("lat"), temp.getDouble("lon"));
                 newMarker.position(pos);
                 newMarker.title(temp.getString("title"));
                 newMarker.snippet(temp.getString("_id"));
-                if(occupied){
+                if (occupied) {
                     newMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.occupied_1x));
-                }else{
+                } else {
                     newMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.unoccupied_1x));
                 }
                 map.addMarker(newMarker);
@@ -282,19 +298,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             switch (v.getId()) {
                 case R.id.floating_refresh:
                     Intent refresh = new Intent(mContext, MainActivity.class);
-                    refresh.putExtra("nickname",NICKNAME);
-                    refresh.putExtra("colorcode",COLORCODE);
-                    refresh.putExtra("userid",USERID);
+                    refresh.putExtra("nickname", NICKNAME);
+                    refresh.putExtra("colorcode", COLORCODE);
+                    refresh.putExtra("userid", USERID);
                     startActivity(refresh);
+                    overridePendingTransition(0, 0);
+                    finish();
                     break;
                 case R.id.floating_myLocation:
-                    myMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(myLat,myLng)));
+                    myMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(myLat, myLng)));
                     break;
                 case R.id.floating_messages:
                     break;
                 case R.id.main_btn_send:
                     //Gather information and emit to server socket
-                    if (mesesage.getText().toString().trim().length()==0){
+                    if (mesesage.getText().toString().trim().length() == 0) {
                         Toast.makeText(mContext, "할일을 입력해주세요!", Toast.LENGTH_LONG).show();
                         break;
                     }
@@ -338,7 +356,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
     // Emitter Section
     private Emitter.Listener onSuccess = new Emitter.Listener() {
         @Override
@@ -346,39 +363,39 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             try {
                 JSONObject data = (JSONObject) args[0];
                 String roomID = data.getString("roomid");
-                Log.e("CREATE SUCCESS",roomID);
+                Log.e("CREATE SUCCESS", roomID);
 
                 JSONObject joinData = new JSONObject();
-                joinData.put("roomid",roomID);
-                joinData.put("userid",USERID);
+                joinData.put("roomid", roomID);
+                joinData.put("userid", USERID);
 
                 roomid = roomID;
-                mSocket.emit("join",joinData);
+                mSocket.emit("join", joinData);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     };
 
-    private Emitter.Listener onJoin= new Emitter.Listener() {
+    private Emitter.Listener onJoin = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             try {
                 JSONObject data = (JSONObject) args[0];
                 String logs = data.getString("logs");
                 String title = data.getString("title");
-                Log.e("JOINED ROOM",logs);
-                Log.e("TITLE",title);
+                Log.e("JOINED ROOM", logs);
+                Log.e("TITLE", title);
 
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                intent.putExtra("logs",logs);
-                intent.putExtra("title",title);
-                intent.putExtra("roomid",roomid);
+                intent.putExtra("logs", logs);
+                intent.putExtra("title", title);
+                intent.putExtra("roomid", roomid);
 
                 mesesage.setText("");
                 startActivity(intent);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
