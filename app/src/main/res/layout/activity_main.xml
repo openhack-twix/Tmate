@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,6 +15,7 @@
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <ImageView
@@ -41,9 +42,10 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="12"
-        android:background="@color/light_gray">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/main_linearLayout_bottomBar"
+        app:layout_constraintTop_toBottomOf="@id/main_toolbar">
+
 
     </FrameLayout>
 
@@ -60,24 +62,50 @@
     -->
 
     <LinearLayout
+        android:id="@+id/main_linearLayout_bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
-            android:id="@+id/main_btn_time"
+        <LinearLayout
+            android:id="@+id/main_layout_timepicker"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:text="시간"
-            android:textAlignment="center" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/main_tv_timeHour"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|right"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|center_horizontal"
+                android:text=":"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/main_tv_timeMinute"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|left"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
 
         <EditText
             android:id="@+id/main_edit_text"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:hint="@string/edit_hint" />
+            android:ellipsize="end" />
 
         <Button
             android:id="@+id/main_btn_send"
@@ -89,4 +117,4 @@
     </LinearLayout>
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
