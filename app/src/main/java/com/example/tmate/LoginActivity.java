@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.facebook.CallbackManager;
@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
 
+    private ImageButton custom_btn_fb, custom_btn_kakao;
     private LoginButton btn_kakao_login;
     private com.facebook.login.widget.LoginButton btn_fb_login;
     private CallbackManager callbackManager;
@@ -36,39 +37,48 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        LoginButtonClickListener loginButtonClickListener = new LoginButtonClickListener();
+
+        //findViewById
         ImageView main_logo = findViewById(R.id.login_iv_logo);
-        main_logo.setOnClickListener(loginButtonClickListener);
-
-        //KAKAO Auth Configuration
-        btn_kakao_login = findViewById(R.id.btn_kakao_login);
-
-        SessionCallback callback = new SessionCallback();
-        Session.getCurrentSession().addCallback(callback);
-
-        //FACEBOOK Auth Configuration
         btn_fb_login = findViewById(R.id.fb_login_button);
-        btn_fb_login.setReadPermissions("email");
+        custom_btn_fb = findViewById(R.id.custom_btn_fb);
+        btn_kakao_login = findViewById(R.id.btn_kakao_login);
+        custom_btn_kakao = findViewById(R.id.custom_btn_kakao);
+
+        //OnClickListener
+        LoginButtonClickListener loginButtonClickListener = new LoginButtonClickListener();
+        main_logo.setOnClickListener(loginButtonClickListener);
+        custom_btn_fb.setOnClickListener(loginButtonClickListener);
+        custom_btn_kakao.setOnClickListener(loginButtonClickListener);
+
 
         callbackManager = CallbackManager.Factory.create();
 
+        //FACEBOOK Auth Configuration
+        btn_fb_login.setReadPermissions("email");
         LoginManager.getInstance().registerCallback(callbackManager,
-            new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    redirectToMain();
-                }
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        redirectToMain();
+                    }
 
-                @Override
-                public void onCancel() {
-                    // App code
-                }
+                    @Override
+                    public void onCancel() {
+                        // App code
+                    }
 
-                @Override
-                public void onError(FacebookException exception) {
-                    // App code
-                }
-            });
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                    }
+                });
+
+
+        //KAKAO Auth Configuration
+        SessionCallback callback = new SessionCallback();
+        Session.getCurrentSession().addCallback(callback);
+
 
     }
 
@@ -78,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void redirectToMain(){
+    public void redirectToMain() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
@@ -94,6 +104,15 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(v.getContext(), MainActivity.class);
                     startActivity(intent);
                     break;
+
+                case R.id.custom_btn_fb:
+                    btn_fb_login.performClick();
+                    break;
+
+                case R.id.custom_btn_kakao:
+                    btn_kakao_login.performClick();
+                    break;
+
 
             }
         }
@@ -139,13 +158,12 @@ public class LoginActivity extends AppCompatActivity {
                     long id = userProfile.getId();
                     Log.e("Profile : ", nickname + "");
                     Log.e("Profile : ", email + "");
-                    Log.e("Profile : ", profileImagePath  + "");
+                    Log.e("Profile : ", profileImagePath + "");
                     Log.e("Profile : ", thumnailPath + "");
                     Log.e("Profile : ", UUID + "");
                     Log.e("Profile : ", id + "");
                     redirectToMain();
                 }
-
 
 
                 // 사용자 정보 요청 실패
