@@ -8,11 +8,16 @@
     android:background="#EEEEEE">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_roomtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="TextView"
+        android:layout_marginBottom="20dp"
+        android:text="Placeholder"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/messages_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +30,7 @@
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_roomtitle" />
 
     <android.support.constraint.ConstraintLayout
         android:background="@color/colorPrimary"
@@ -38,44 +43,61 @@
         app:layout_constraintTop_toBottomOf="@+id/messages_view">
 
         <android.support.constraint.ConstraintLayout
-            android:background="@drawable/message_box"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
+            android:background="@drawable/message_box"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/et_chat_text"
                 style="@style/Widget.AppCompat.AutoCompleteTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:ems="10"
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="메세지를 입력하세요."
+                android:hint="메세지를 입력하세요."
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton"
+                app:layout_constraintEnd_toStartOf="@+id/btn_chat_send"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/btn_chat_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                android:background="@color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/editText"
+                app:layout_constraintStart_toEndOf="@+id/et_chat_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars[0]" />
+                tools:srcCompat="@drawable/icon_send" />
         </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
+
+    <Button
+        android:id="@+id/btn_chat_exit"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="15dp"
+        android:text="나가기"
+        app:layout_constraintBottom_toTopOf="@+id/messages_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

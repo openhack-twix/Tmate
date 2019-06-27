@@ -115,14 +115,53 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void redirectToMain(String colorcode, String userid) {
-        Log.e("REDIRECT", colorcode);
-        Log.e("USERID", userid);
+    public void redirectToMain(String colorcode, String nickname, String userid) {
+        Log.e("REDIRECT",colorcode);
+        Log.e("USERID",userid);
+        Log.e("NICKNAME",nickname);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("colorcode", colorcode);
-        intent.putExtra("userid", userid);
+        intent.putExtra("colorcode",colorcode);
+        intent.putExtra("userid",userid);
+        intent.putExtra("nickname",nickname);
         startActivity(intent);
         finish();
+    }
+
+    public static String sendGet(final String key_url){
+        final String[] response = new String[1];
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    URL url = new URL(key_url);
+                    StringBuffer res = new StringBuffer();
+
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+
+                    int status = conn.getResponseCode();
+                    if(status!=200){
+                        throw new IOException("GET failed");
+                    }else{
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        while ((inputLine = in.readLine())!=null){
+                            res.append(inputLine);
+                        }
+                        in.close();
+                    }
+
+                    conn.disconnect();
+
+                    response[0] = res.toString();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+        while(thread.isAlive()){}
+        return response[0];
     }
 
     public static String sendPost(final byte[] postDataBytes, final String key_url) {
@@ -279,9 +318,9 @@ public class LoginActivity extends AppCompatActivity {
         Log.e("LOGIN", resultLogin);
         try {
             JSONObject result = new JSONObject(resultLogin);
-            if (result.getString("success").equals("0")) {
-                Log.e("SUCCESS", "0");
-                redirectToMain(result.getString("colorcode"), result.getString("nickname"));
+            if(result.getString("success").equals("0")){
+                Log.e("SUCCESS","0");
+                redirectToMain(result.getString("colorcode"),result.getString("nickname"),result.getString("user"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
