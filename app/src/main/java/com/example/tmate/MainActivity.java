@@ -5,6 +5,7 @@ package com.example.tmate;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -12,6 +13,18 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+
+import android.app.TimePickerDialog;
+import android.content.Context;
+
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +39,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.kakao.usermgmt.UserManagement;
@@ -47,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int targetHour = 0;
     private int targetMinutes = 0;
 
+    private GoogleMap myMap;
+
     private double myLat = 0.0;
     private double myLng = 0.0;
     private String myCity = "";
@@ -55,21 +73,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final double LAT_INTERLAKEN = 46.685523;
     private static final double LNG_INTERLAKEN = 7.858514;
 
+    private final boolean[] is_moved = {false};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 120);
-        }
         setContentView(R.layout.activity_main);
+
+        requestPermissionAndContinue();
 
         mContext = this;
 
@@ -85,10 +97,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btn_send.setOnClickListener(mainButtonClickListener);
         timeLayout.setOnClickListener(mainButtonClickListener);
 
+    }
+
+    private void setMap(){
         //Google Map API configuration
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(this);
     }
 
@@ -98,15 +112,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng SEOUL = new LatLng(37.56, 126.97);
         LatLng INTERLAKEN = new LatLng(LAT_INTERLAKEN, LNG_INTERLAKEN);
 
+        myMap = map;
+
         //Get current location
 
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         @SuppressLint("MissingPermission") Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        myLat = location.getLatitude();
-        myLng = location.getLongitude();
+        //myLat = location.getLatitude();
+        //myLng = location.getLongitude();
 
-        LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
+        myLat = LAT_INTERLAKEN;
+        myLng = LNG_INTERLAKEN;
+
+        LatLng current = new LatLng(myLat, myLng);
 
         //Get city name
         Geocoder gcd = new Geocoder(this, Locale.getDefault());
@@ -126,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(current);
-        markerOptions.title("나, 여기!");
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
         map.addMarker(markerOptions);
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.getPosition(), 14));
@@ -141,9 +160,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(clickCoords);
-                markerOptions.title("나, 여기!");
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
+
                 map.addMarker(markerOptions);
                 map.animateCamera(CameraUpdateFactory.newLatLng(markerOptions.getPosition()));
+            }
+        });
+        map.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                if(is_moved[0]){
+                    map.clear();
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(map.getCameraPosition().target);
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
+
+                    map.addMarker(markerOptions);
+                }
+                is_moved[0] = false;
+            }
+        });
+        map.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                is_moved[0] = true;
             }
         });
     }
@@ -171,6 +211,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //Nothing to do.
             }
         });
+    }
+
+    private void requestPermissionAndContinue(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 120);
+            }else{
+                Toast.makeText(this,"권한허용이 필요합니다.",Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }else{
+            setMap();
+        }
     }
 
     public void setTimeTextView(int targetHour, int targetMinutes) {
@@ -214,6 +267,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     }
-
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 120:
+                final int numOfRequest = grantResults.length;
+                final boolean isGranted = numOfRequest == 1
+                        && PackageManager.PERMISSION_GRANTED == grantResults[numOfRequest - 1];
+                if (!isGranted) {
+                    Toast.makeText(this,"권한허용이 필요합니다.",Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                Intent refresh = new Intent(this, MainActivity.class);
+                startActivity(refresh);
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 }

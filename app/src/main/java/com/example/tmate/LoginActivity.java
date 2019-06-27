@@ -23,6 +23,8 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.exception.KakaoException;
 
+import java.net.Socket;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -32,6 +34,10 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton btn_kakao_login;
     private com.facebook.login.widget.LoginButton btn_fb_login;
     private CallbackManager callbackManager;
+
+    public static String SERVER_URL = "not yet";
+
+    public static Socket mSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
