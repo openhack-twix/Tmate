@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class GuideActivity extends AppCompatActivity {
 
@@ -19,7 +20,7 @@ public class GuideActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_guide);
 
-        Button skipButton = findViewById(R.id.guide_btn_skip);
+        TextView skipButton = findViewById(R.id.guide_btn_skip);
         final Button startButton = findViewById(R.id.guide_btn_start);
         final ViewPager mViewPager = findViewById(R.id.guide_vp_pager);
 
