@@ -11,6 +11,40 @@
 
     <ImageView
         android:id="@+id/login_iv_logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginBottom="200dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/btn_kakao_login"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.kakao.usermgmt.LoginButton
+        android:id="@+id/btn_kakao_login"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginRight="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/fb_login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_iv_logo" />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/fb_login_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginBottom="50dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="300dp"
@@ -18,28 +52,5 @@
         app:layout_constraintBottom_toTopOf="@id/login_btn_fb"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
-
-
-    <Button
-        android:id="@+id/login_btn_kakao"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="20dp"
-        android:background="#FAE100"
-        android:text="kakao login"
-        app:layout_constraintBottom_toTopOf="@+id/login_btn_fb"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <Button
-        android:id="@+id/login_btn_fb"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="100dp"
-        android:background="#3B5997"
-        android:text="facebook login"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
+  
 </android.support.constraint.ConstraintLayout>
