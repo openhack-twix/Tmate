@@ -18,6 +18,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -30,10 +31,12 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,30 +47,37 @@ import java.util.Locale;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private TextView tvHour = null;
-    private TextView tvMinutes = null;
     private Context mContext = null;
-    private Calendar targetCalendar = null;
-    private int targetHour = 0;
-    private int targetMinutes = 0;
+
+    private TextView mesesage;
 
     private GoogleMap myMap;
 
     private double myLat = 0.0;
     private double myLng = 0.0;
-    private String myCity = "";
+    public static String myCity = "";
 
     //Test LatLng
     private static final double LAT_INTERLAKEN = 46.685523;
     private static final double LNG_INTERLAKEN = 7.858514;
 
+    public static String ROOMS_API = "http://10.10.2.126:3000/api/rooms/";
+
     private final boolean[] is_moved = {false};
     public static Socket mSocket;
+
+    public static String NICKNAME;
+    public static String COLORCODE;
+    public static String USERID;
+
+    private String roomid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,21 +88,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mContext = this;
 
+        Intent userdata = getIntent();
+
+        NICKNAME = userdata.getStringExtra("nickname");
+        COLORCODE = userdata.getStringExtra("colorcode");
+        USERID = userdata.getStringExtra("userid");
+
         MainButtonClickListener mainButtonClickListener = new MainButtonClickListener();
 
-
         ImageButton btn_send = findViewById(R.id.main_btn_send);
-        ConstraintLayout timeLayout = findViewById(R.id.main_layout_timepicker);
-        tvHour = findViewById(R.id.main_tv_timeHour);
-        tvMinutes = findViewById(R.id.main_tv_timeMinute);
+        mesesage = findViewById(R.id.editText_messages);
 
-        ImageButton btn_chat_room = findViewById(R.id.btn_chat_room);
         FloatingActionButton floating_mylocation = findViewById(R.id.floating_myLocation);
-        floating_mylocation.setImageResource(R.drawable.floating_mylocation_3x);
+        floating_mylocation.setOnClickListener(mainButtonClickListener);
+        FloatingActionButton floating_refresh = findViewById(R.id.floating_refresh);
+        floating_refresh.setOnClickListener(mainButtonClickListener);
+        FloatingActionButton floating_messages = findViewById(R.id.floating_messages);
+        floating_messages.setOnClickListener(mainButtonClickListener);
 
         btn_send.setOnClickListener(mainButtonClickListener);
-        timeLayout.setOnClickListener(mainButtonClickListener);
-        btn_chat_room.setOnClickListener(mainButtonClickListener);
 
         try {
             mSocket = IO.socket(LoginActivity.SERVER_URL);
@@ -101,18 +115,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             e.printStackTrace();
         }
 
-        JSONObject data = new JSONObject();
-        try{
-            data.put("city","익산");
-            data.put("title","익산");
-            data.put("content","익산");
-            data.put("lat",0.1);
-            data.put("lon",0.3);
-            data.put("userid","test");
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-        mSocket.emit("create room",data);
+        mSocket.on("create success",onSuccess);
+        mSocket.on("join success",onJoin);
     }
 
     private void setMap() {
@@ -125,18 +129,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(final GoogleMap map) {
 
-        LatLng SEOUL = new LatLng(37.56, 126.97);
-        LatLng INTERLAKEN = new LatLng(LAT_INTERLAKEN, LNG_INTERLAKEN);
-
         myMap = map;
 
         //Get current location
 
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         @SuppressLint("MissingPermission") Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        //myLat = location.getLatitude();
-        //myLng = location.getLongitude();
 
         myLat = LAT_INTERLAKEN;
         myLng = LNG_INTERLAKEN;
@@ -154,23 +152,48 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (addresses.size() > 0) {
             Address city_addr = addresses.get(0);
             myCity = city_addr.getLocality();
-            Toast.makeText(this, myCity, Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "대체 어디 계신지...", Toast.LENGTH_LONG).show();
         }
+
+        //Spread Markers
+
+        //GET room array
+        String room_url = ROOMS_API + myCity;
+        final String result = LoginActivity.sendGet(room_url);
+        Log.e("ROOMS",result);
+
+        makeMarkers(map,result);
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(current);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
         map.addMarker(markerOptions);
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.getPosition(), 14));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.getPosition(), 16));
+
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                String roomID = marker.getSnippet();
+                JSONObject joinData = new JSONObject();
+
+                try {
+                    joinData.put("roomid",roomID);
+                    joinData.put("userid",MainActivity.USERID);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                roomid = roomID;
+                mSocket.emit("join",joinData);
+            }
+        });
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(final LatLng clickCoords) {
                 map.clear();
-
+                makeMarkers(map,result);
                 myLat = clickCoords.latitude;
                 myLng = clickCoords.longitude;
 
@@ -182,45 +205,50 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 map.animateCamera(CameraUpdateFactory.newLatLng(markerOptions.getPosition()));
             }
         });
-        map.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                if (is_moved[0]) {
-                    map.clear();
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(map.getCameraPosition().target);
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
+    }
 
-                    map.addMarker(markerOptions);
+    private void makeMarkers(GoogleMap map, String rooms){
+        try {
+            JSONArray room_array = new JSONArray(rooms);
+            for(int i = 0; i<room_array.length(); i++){
+                JSONObject temp = room_array.getJSONObject(i);
+
+                JSONArray users = temp.getJSONArray("users");
+                //check whether user is already in the room
+                boolean occupied = false;
+                for(int j = 0; j<users.length(); j++){
+                    if(users.getJSONObject(j).getString("_id").equals(USERID)){
+                        occupied = true;
+                        break;
+                    }
                 }
-                is_moved[0] = false;
+                MarkerOptions newMarker = new MarkerOptions();
+                LatLng pos = new LatLng(temp.getDouble("lat"),temp.getDouble("lon"));
+                newMarker.position(pos);
+                newMarker.title(temp.getString("title"));
+                newMarker.snippet(temp.getString("_id"));
+                if(occupied){
+                    newMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.occupied_1x));
+                }else{
+                    newMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.unoccupied_1x));
+                }
+                map.addMarker(newMarker);
             }
-        });
-        map.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                is_moved[0] = true;
-            }
-        });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (targetCalendar == null) {
-            targetCalendar = Calendar.getInstance();
-        }
-
-        targetHour = targetCalendar.get(Calendar.HOUR_OF_DAY);
-        targetMinutes = targetCalendar.get(Calendar.MINUTE);
-        setTimeTextView(targetHour, targetMinutes);
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mSocket.off("create success");
+        mSocket.off("join success");
         UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
             @Override
             public void onCompleteLogout() {
@@ -234,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 120);
             } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 120);
                 Toast.makeText(this, "권한허용이 필요합니다.", Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -242,45 +271,48 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void setTimeTextView(int targetHour, int targetMinutes) {
-        tvHour.setText(String.valueOf(targetHour));
-        if (targetMinutes < 10) {
-            tvMinutes.setText("0" + targetMinutes);
-            return;
-        }
-        tvMinutes.setText(String.valueOf(targetMinutes));
-    }
+
+    //CLICK LISTENER
 
     public class MainButtonClickListener implements View.OnClickListener {
 
         @Override
-
         public void onClick(View v) {
 
             switch (v.getId()) {
+                case R.id.floating_refresh:
+                    Intent refresh = new Intent(mContext, MainActivity.class);
+                    refresh.putExtra("nickname",NICKNAME);
+                    refresh.putExtra("colorcode",COLORCODE);
+                    refresh.putExtra("userid",USERID);
+                    startActivity(refresh);
+                    break;
+                case R.id.floating_myLocation:
+                    myMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(myLat,myLng)));
+                    break;
+                case R.id.floating_messages:
+                    break;
                 case R.id.main_btn_send:
-                    Toast.makeText(MainActivity.this, "send", Toast.LENGTH_SHORT).show();
+                    //Gather information and emit to server socket
+                    if (mesesage.getText().toString().trim().length()==0){
+                        Toast.makeText(mContext, "할일을 입력해주세요!", Toast.LENGTH_LONG).show();
+                        break;
+                    }
+
+                    JSONObject data = new JSONObject();
+                    try {
+                        data.put("city", myCity);
+                        data.put("title", mesesage.getText().toString().trim());
+                        data.put("content", "");
+                        data.put("lat", myLat);
+                        data.put("lon", myLng);
+                        data.put("userid", USERID);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mSocket.emit("create room", data);
                     break;
 
-                case R.id.main_layout_timepicker:
-                    TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            if (view.isShown()) {
-                                targetHour = hourOfDay;
-                                targetMinutes = minute;
-                                setTimeTextView(targetHour, targetMinutes);
-                            }
-                        }
-                    };
-
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(mContext, android.R.style.Theme_Holo_Light_Dialog_NoActionBar, onTimeSetListener, targetHour, targetMinutes, true);
-                    timePickerDialog.setTitle("몇 시까지?");
-                    timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    timePickerDialog.show();
-                    break;
-                case R.id.btn_chat_room:
-                    break;
             }
 
         }
@@ -304,4 +336,51 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
+
+
+    // Emitter Section
+    private Emitter.Listener onSuccess = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            try {
+                JSONObject data = (JSONObject) args[0];
+                String roomID = data.getString("roomid");
+                Log.e("CREATE SUCCESS",roomID);
+
+                JSONObject joinData = new JSONObject();
+                joinData.put("roomid",roomID);
+                joinData.put("userid",USERID);
+
+                roomid = roomID;
+                mSocket.emit("join",joinData);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private Emitter.Listener onJoin= new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            try {
+                JSONObject data = (JSONObject) args[0];
+                String logs = data.getString("logs");
+                String title = data.getString("title");
+                Log.e("JOINED ROOM",logs);
+                Log.e("TITLE",title);
+
+                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                intent.putExtra("logs",logs);
+                intent.putExtra("title",title);
+                intent.putExtra("roomid",roomid);
+
+                mesesage.setText("");
+                startActivity(intent);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
 }
