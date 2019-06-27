@@ -1,7 +1,5 @@
 package com.example.tmate;
 
-import android.support.design.widget.FloatingActionButton;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
@@ -16,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
