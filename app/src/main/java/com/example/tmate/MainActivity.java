@@ -85,13 +85,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         requestPermissionAndContinue();
 
-        mContext = this;
-
         Intent userdata = getIntent();
 
         NICKNAME = userdata.getStringExtra("nickname");
         COLORCODE = userdata.getStringExtra("colorcode");
         USERID = userdata.getStringExtra("userid");
+
+        mContext = this;
 
         MainButtonClickListener mainButtonClickListener = new MainButtonClickListener();
 
@@ -209,13 +209,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onMapClick(final LatLng clickCoords) {
                 map.clear();
+                String room_url = ROOMS_API + myCity;
+                final String result = LoginActivity.sendGet(room_url);
+                Log.e("ROOMS", result);
+
                 makeMarkers(map, result);
-                myLat = clickCoords.latitude;
-                myLng = clickCoords.longitude;
 
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(clickCoords);
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
+
+                myLat = clickCoords.latitude;
+                myLng = clickCoords.longitude;
 
                 map.addMarker(markerOptions);
                 map.animateCamera(CameraUpdateFactory.newLatLng(markerOptions.getPosition()));
@@ -258,6 +263,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+        if(myMap!=null){
+            myMap.clear();
+            String room_url = ROOMS_API + myCity;
+            final String result = LoginActivity.sendGet(room_url);
+            Log.e("ROOMS", result);
+
+            makeMarkers(myMap, result);
+
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(myLat,myLng));
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
+            myMap.addMarker(markerOptions);
+
+            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.getPosition(), 16));
+        }
     }
 
     @Override
@@ -279,24 +299,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try {
-            super.onActivityResult(requestCode, resultCode, data);
-
-            Intent refresh = new Intent(this,MainActivity.class);
-            refresh.putExtra("nickname",NICKNAME);
-            refresh.putExtra("colorcode",COLORCODE);
-            refresh.putExtra("userid",USERID);
-            startActivity(refresh);
-            this.finish();
-
-        } catch (Exception ex) {
-            Toast.makeText(this, ex.toString(),
-                    Toast.LENGTH_SHORT).show();
-        }
-
-    }
 
     private void requestPermissionAndContinue() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -305,7 +307,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 120);
                 Toast.makeText(this, "권한허용이 필요합니다.", Toast.LENGTH_LONG).show();
-                finish();
             }
         } else {
             setMap();
@@ -322,20 +323,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             switch (v.getId()) {
                 case R.id.floating_refresh:
-                    Intent refresh = new Intent(mContext, MainActivity.class);
-                    refresh.putExtra("nickname", NICKNAME);
-                    refresh.putExtra("colorcode", COLORCODE);
-                    refresh.putExtra("userid", USERID);
-                    startActivity(refresh);
-                    overridePendingTransition(0, 0);
-                    finish();
+                    if(myMap!=null) {
+                        myMap.clear();
+                        String room_url = ROOMS_API + myCity;
+                        final String result = LoginActivity.sendGet(room_url);
+                        Log.e("ROOMS", result);
+
+                        makeMarkers(myMap, result);
+
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(new LatLng(myLat, myLng));
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
+                        myMap.addMarker(markerOptions);
+
+                        myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.getPosition(), 16));
+                    }
                     break;
                 case R.id.floating_myLocation:
                     myMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(myLat, myLng)));
                     break;
                 case R.id.floating_messages:
                     Intent intent = new Intent(MainActivity.this,ChatRoomActivity.class);
-                    startActivityForResult(intent,1);
+                    startActivity(intent);
                     break;
                 case R.id.main_btn_send:
                     //Gather information and emit to server socket
@@ -421,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 intent.putExtra("roomid", roomid);
 
                 mesesage.setText("");
-                startActivityForResult(intent,2);
+                startActivity(intent);
             }catch (Exception e){
                 e.printStackTrace();
             }
