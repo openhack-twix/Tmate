@@ -124,22 +124,22 @@ public class ChatActivity extends AppCompatActivity {
 
             MemberData newMember = new MemberData(user.getString("name"),user.getString("colorcode"));
             Message msg = new Message(temp.getString("message"),newMember,is_me);
-            messageAdapter.add(msg);
+            scrollMyListViewToBottom(msg);
         }
-        scrollMyListViewToBottom();
-    }
 
+    }
     @Override
     protected void onDestroy(){
         super.onDestroy();
         mSocket.off("receive");
     }
 
-    private void scrollMyListViewToBottom() {
+    private void scrollMyListViewToBottom(final Message msg) {
         logView.post(new Runnable() {
             @Override
             public void run() {
                 // Select the last row so it will scroll into view...
+                messageAdapter.add(msg);
                 logView.setSelection(logView.getCount() - 1);
             }
         });
@@ -166,9 +166,8 @@ public class ChatActivity extends AppCompatActivity {
                 MemberData newMember = new MemberData(name,colorcode);
                 Message msg = new Message(message,newMember,is_me);
 
-                messageAdapter.add(msg);
                 // scroll the ListView to the last added element
-                scrollMyListViewToBottom();
+                scrollMyListViewToBottom(msg);
 
             }catch (Exception e){
                 Log.e("onReceive ERROR", e.getMessage());
